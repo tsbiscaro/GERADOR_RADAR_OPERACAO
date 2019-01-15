@@ -12,16 +12,16 @@ int main(int argc, char *argv[])
    int var_idx, i;
    int var = 0, dx = 0, dy = 0, nx = 0, ny = 0;
    
-   if (argc != 2)
+   if (argc != 3)
       {
-      printf("Uso: %s <arquivo>\n", argv[0]);
+      printf("Uso: %s <arquivo> <arquivo de parametros>\n", argv[0]);
       return -1;
       }
 
-   fp = fopen("params.txt", "r");
+   fp = fopen(argv[2], "r");
    if (NULL == fp)
       {
-      printf("Erro na abertura do arquivo params.txt\n");
+      printf("Erro na abertura do arquivo %s\n", argv[2]);
       return -1;
       }
 
