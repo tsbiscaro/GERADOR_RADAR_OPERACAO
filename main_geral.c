@@ -120,6 +120,10 @@ int main(int argc, char *argv[])
    strcpy(lista_parametros.sufixo, "ppi");
    (void) faz_ppi(&lista_parametros, radar);
 
+   lista_parametros.produto = PROD_PPI;
+   strcpy(lista_parametros.sufixo, "ppi_polar");
+   (void) faz_ppi_polar(&lista_parametros, radar);
+
 
    RSL_free_radar(radar);
 
