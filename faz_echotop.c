@@ -22,7 +22,7 @@ int faz_echotop(struct params_list *lista_parametros, Radar *radar)
    {
    Volume *volume = NULL;
    Cube *cubo = NULL;
-   float valor = 0, val1 = 0, val2 = 0;
+   float valor = 0, val1 = 0, val2 = 0, val_vizinho = 0;
    
    int nx = 0, ny = 0, nz = 0;
    int radar_x = 0, radar_y = 0, radar_z = 0;
@@ -30,7 +30,7 @@ int faz_echotop(struct params_list *lista_parametros, Radar *radar)
    float bin_temp = 0.0;
    
    char arq_out[MAX_FILENAME];
-   int i = 0, j = 0, k = 0, lev = 0, arq = 0, var = 0;
+   int i = 0, j = 0, k = 0, lev = 0, arq = 0, var = 0, viz=0;
    short int header_size = 0;
    float range = 1000;
    struct header_saida cabecalho;
@@ -129,9 +129,9 @@ int faz_echotop(struct params_list *lista_parametros, Radar *radar)
                                radar, arq, var, lev);
             
             /*EchoTop*/
-            for (i=0; i < nx; i++)
+            for (i=1; i < nx-1; i++)
                {
-               for (j=0; j < ny; j++)
+               for (j=1; j < ny-1; j++)
                   {
                   /*
                   if (verifica_coluna(cubo, i, j, nz) == RSL_ERR)
@@ -155,12 +155,59 @@ int faz_echotop(struct params_list *lista_parametros, Radar *radar)
                      if (val2 >= valor)
                         {
                         /*calcula a altura para esse valor de variavel
-                        
-                        x = (y - yini) / a + xini
-                        onde a eh o coef da reta (y2-y1)/(x2-x1)
-                        altura eh x e o valor da var eh y
-                        
+
+                        verifica se eh um ponto isolado na coluna
+                        1 - verifica nos vizinhos ao lado
                         */
+                        viz = 0;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i+1][j]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i-1][j]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i+1][j+1]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i-1][j+1]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i+1][j-1]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i-1][j-1]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i][j-1]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+                        val_vizinho = volume->h.f(cubo->carpi[k]->data[i][j+1]);
+                        if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                            val_vizinho == RFVAL || val_vizinho == NOECHO) viz++;
+
+                        /*ponto isolado*/
+                        if (8 == viz) continue;
+                        
+                        /*verifica na vertical*/
+
+                        if (k > 3)
+                           {
+                           val_vizinho = volume->h.f(cubo->carpi[k-1]->data[i][j]);
+                           if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                               val_vizinho == RFVAL || val_vizinho == NOECHO) continue;
+                           val_vizinho = volume->h.f(cubo->carpi[k-2]->data[i][j]);
+                           if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                               val_vizinho == RFVAL || val_vizinho == NOECHO) continue;
+                           val_vizinho = volume->h.f(cubo->carpi[k-3]->data[i][j]);
+                           if (val_vizinho == BADVAL || val_vizinho == APFLAG ||
+                               val_vizinho == RFVAL || val_vizinho == NOECHO) continue;
+                           val_vizinho = volume->h.f(cubo->carpi[k-1]->data[i][j]);
+                           if (val_vizinho < valor/2) continue;
+                           val_vizinho = volume->h.f(cubo->carpi[k-2]->data[i][j]);
+                           if (val_vizinho < valor/2) continue;
+                           }
+                        
+                           
                         altura = dz*k;
                         saida[i + nx*j] = volume->h.invf(altura + ((float) lista_parametros->base/1000));
                         /*Encontrou o valor, sai do for k*/

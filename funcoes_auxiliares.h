@@ -117,6 +117,8 @@ struct params_list
    float d;
    /*largura do feixe*/
    float beam_width;
+   /*banda do radar - S, C, ou X*/
+   char banda;
    };
 
 struct header_saida
@@ -176,15 +178,19 @@ int faz_echotop(struct params_list *lista_parametros, Radar *radar);
 int faz_hmax(struct params_list *lista_parametros);
 int faz_maxdisplay(struct params_list *lista_parametros);
 int faz_ppi(struct params_list *lista_parametros, Radar *radar);
+int faz_ppi_polar(struct params_list *lista_parametros, Radar *radar);
 int faz_rhi(struct params_list *lista_parametros);
 int faz_vil(struct params_list *lista_parametros, Radar *radar);
 int faz_rastreio(struct params_list *lista_parametros);
 int faz_cluster(struct params_list *lista_parametros);
 int faz_alerta(struct params_list *lista_parametros);
-int faz_chuva(struct params_list *lista_parametros);
+int faz_chuva(struct params_list *lista_parametros, Radar *radar);
 int faz_acumulado_chuva(struct params_list *lista_parametros);
 int faz_ppi_todos(struct params_list *lista_parametros);
 int faz_rti(struct params_list *lista_parametros);
+float calcula_chuva_dual_pol(float dbz, float zdr,
+                             float kdp, float a, float b, char banda);
+float calcula_chuva_single_pol(float dbz, float a, float b);
 
 
 char le_parametros_entrada(char *arquivo, int *parametros,

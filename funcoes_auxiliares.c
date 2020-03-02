@@ -474,3 +474,108 @@ void corrige_param_radar(Volume *v, struct params_list *params)
          }
       }
    }
+
+
+
+/*
+@##############################################################################
+@
+@   NOME         : calcula_chuva_dual_pol
+@
+@   FUNCAO       : calcula chuva para radares dual pol
+@
+@   PARAMETROS   : (E) dbz, zdr, kdp, a e b da relacao z-r
+@                  (S) *radar
+@
+@   RETORNO      : chuva em mm/h (float)
+@
+@   OBSERVACOES  : 
+@
+@##############################################################################
+*/
+
+float calcula_chuva_dual_pol(float dbz, float zdr,
+                             float kdp, float a, float b, char banda)
+   {
+   float rkdp = 0;
+   float rain = 0;
+
+   switch(banda)
+      {
+      /*banda-S*/
+      case 0:
+         if (kdp > 0)
+            {
+            rkdp = 44 * pow(kdp, 0.822);
+            }
+         else
+            {
+            rkdp = 0;
+            }
+         rain = (pow((pow(10, dbz/10) / a), (1/b)));
+         if (rain <= 6)
+            {
+            return rain / (0.4 + 5*(pow(fabsf(zdr -1), 1.3)));
+            }
+         if ((rain > 6) && (rain <=50))
+            {
+            return rkdp / (0.4 + 3.5*(pow(fabsf(zdr -1), 1.7)));
+            }
+         if (rain > 50)
+            {
+            return rkdp;
+            }
+         /*caso nao encontrou nada...*/
+         return -99;
+         break;
+         /*banda-C*/
+      case 1:
+         if ((dbz > 38) && (kdp > 0.15))
+            {
+            return 33.5 * pow(kdp, 0.83)
+            }
+         else
+            {
+            return (pow((pow(10, dbz/10) / a), (1/b)));
+            }
+         break;
+         /*banda-X*/
+      case 2:
+         if ((dbz > 35) && (kdp > 0.3))
+            {
+            return = 19.63 * pow(kdp, 0.823)
+            }
+         else
+            {
+            return (pow((pow(10, dbz/10) / a), (1/b)));
+            }
+         break;
+      }
+   /*caso a banda tenha sido passado errada, retorna 0*/
+   return 0;
+   }
+
+/*
+@##############################################################################
+@
+@   NOME         : calcula_chuva_single_pol
+@
+@   FUNCAO       : calcula chuva para radares single pol 
+@
+@   PARAMETROS   : (E) dbz, a e b da relacao z-r
+@                  (S) *radar
+@
+@   RETORNO      : chuva em mm/h (float)
+@
+@   OBSERVACOES  : 
+@
+@##############################################################################
+*/
+
+float calcula_chuva_single_pol(float dbz, float a, float b)
+   {
+   return (pow((pow(10, dbz/10) / a), (1/b)));
+   }
+
+
+

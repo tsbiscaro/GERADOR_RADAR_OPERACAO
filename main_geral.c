@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
    struct params_list lista_parametros;
    int VAR[4] = {DZ_INDEX, CZ_INDEX, VR_INDEX, SW_INDEX};
    int var_idx, i;
-   int var = 0, dx = 0, dy = 0, nx = 0, ny = 0;
+   int var = 0, dx = 0, dy = 0, nx = 0, ny = 0, banda=0;
    
    if (argc != 3)
       {
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
    fscanf(fp, "%d", &ny);
    fscanf(fp, "%d", &dx);
    fscanf(fp, "%d", &dy);
+   fscanf(fp, "%d", &banda);
     
    memset(&lista_parametros, 0, sizeof(struct params_list));
 
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
    lista_parametros.radar_x = lista_parametros.nx/2;
    lista_parametros.radar_y = lista_parametros.ny/2;
    lista_parametros.radar_z = 0;
-
+   lista_parametros.banda = banda;
    lista_parametros.nvars = 1;
    lista_parametros.nlevels = 15;
    if (0 == var)
