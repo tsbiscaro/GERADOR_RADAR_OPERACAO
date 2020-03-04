@@ -242,6 +242,7 @@ char *interpola_mascara(short int *entrada,
 
 void corrige_param_radar(Volume *v, struct params_list *params);
 int filtra_volume(Volume *volume, struct params_list *lista_parametros);
+void filtra_raw_data(Radar *radar);
 
 /*
 Funcoes que necessitam de C++ - Nao utilizadas nesse projeto

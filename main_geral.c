@@ -43,6 +43,10 @@ int main(int argc, char *argv[])
              lista_parametros.file_list[0]);
       return -1;
       }
+
+   /*aplica filtro de radiais espurias*/
+   filtra_raw_data(radar);
+
    
    lista_parametros.nx = nx;
    lista_parametros.ny = ny;

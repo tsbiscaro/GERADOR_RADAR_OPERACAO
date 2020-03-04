@@ -532,7 +532,7 @@ float calcula_chuva_dual_pol(float dbz, float zdr,
       case 1:
          if ((dbz > 38) && (kdp > 0.15))
             {
-            return 33.5 * pow(kdp, 0.83)
+            return 33.5 * pow(kdp, 0.83);
             }
          else
             {
@@ -543,7 +543,7 @@ float calcula_chuva_dual_pol(float dbz, float zdr,
       case 2:
          if ((dbz > 35) && (kdp > 0.3))
             {
-            return = 19.63 * pow(kdp, 0.823)
+            return 19.63 * pow(kdp, 0.823);
             }
          else
             {
@@ -577,5 +577,234 @@ float calcula_chuva_single_pol(float dbz, float a, float b)
    return (pow((pow(10, dbz/10) / a), (1/b)));
    }
 
+/*
+@##############################################################################
+@
+@   NOME         : filtra_raw_data
+@
+@   FUNCAO       : filtra volume baseado em valores suspeitos de refletividade
+@
+@   PARAMETROS   : (E) *radar
+@                  (S) 
+@
+@   RETORNO      : 
+@
+@   OBSERVACOES  : 
+@
+@##############################################################################
+*/
 
+void filtra_raw_data(Radar *radar)
+   {
+   Volume *vol_controle = NULL;
+   int nweep = 0, nrays=0, nbins = 0;
+   int i = 0, j = 0, k = 0;
+   int var = -1;
+   float val = 0, val1 = 0, val2 = 0, totaldBZ;
+   
+   /*verifica valores muito altos de refletividade*/
+
+   /*testa primeiro a refletividade corrigida*/
+   if (NULL != radar->v[CZ_INDEX])
+      {
+      var = CZ_INDEX;
+      }
+   else
+      {
+      /*se nao encontrou ref corrigida (arq SIGMET por exemplo), usa DZ*/
+      if (NULL == radar->v[DZ_INDEX])
+         {
+         /*se nao encontrou nenhuma, sai*/
+         return;
+         }
+      else
+         {
+         var = DZ_INDEX;
+         }
+      }
+
+   /*cria um volume de controle com 1 e 0 - dados bons e dados ruins*/
+   vol_controle = RSL_copy_volume(radar->v[var]);
+   for(i = 0; i < vol_controle->h.nsweeps; i++)
+      {
+      for(j = 0; j < vol_controle->sweep[i]->h.nrays; j++)
+         {
+         for(k = 0; k < vol_controle->sweep[i]->ray[j]->h.nbins; k++)
+            {
+            vol_controle->sweep[i]->ray[j]->range[k] = 1;
+            }
+         }
+      }
+   
+   /*verifica os bins com possiveis erros
+
+   1 - bins isolados com dBZ > 35
+   2 - bins acima de 70 dBZ
+   3 - dBZ acumulado na radial maior que 45dBZ x numbins
+   */
+
+
+   for(i = 0; i < radar->v[var]->h.nsweeps; i++)
+      {
+      totaldBZ = 0;
+      /*faz um tratamento para o ray 0*/
+      for(k = 0; k < radar->v[var]->sweep[i]->ray[0]->h.nbins; k++)
+         {
+         val = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[0]->range[k]);
+         if (val == BADVAL || val == APFLAG ||
+             val == RFVAL || val == NOECHO) 
+            {
+            continue;
+            }
+
+         totaldBZ += val;
+         
+         if (val > 70)
+            {
+            vol_controle->sweep[i]->ray[0]->range[k] = 0;
+            }
+         
+         if (val >= 35)
+            {
+            val1 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[radar->v[var]->sweep[i]->h.nrays-1]->range[k]);
+            val2 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[1]->range[k]);
+            if (val1 == BADVAL || val1 == APFLAG ||
+                val1 == RFVAL || val1 == NOECHO ||
+                val2 == BADVAL || val2 == APFLAG ||
+                val2 == RFVAL || val2 == NOECHO ||
+                val1 < 15 || val2 || 15)
+               {
+               /*bin isolado*/
+               vol_controle->sweep[i]->ray[0]->range[k] = 0;
+               }
+            }
+         }
+
+      if (totaldBZ > (45.0 * ((float) radar->v[var]->sweep[i]->ray[0]->h.nbins)))
+         {
+         for(k = 0; k < radar->v[var]->sweep[i]->ray[0]->h.nbins; k++)
+            {
+            vol_controle->sweep[i]->ray[0]->range[k] = 0;
+            }
+         }
+
+      
+
+      /*verifica pontos isolados na radial*/
+      for(k = 1; k < radar->v[var]->sweep[i]->ray[0]->h.nbins-1; k++)
+         {
+         val = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[0]->range[k]);
+         if (val == BADVAL || val == APFLAG ||
+             val == RFVAL || val == NOECHO) 
+            {
+            continue;
+            }         
+         if (val > 70)
+            {
+            vol_controle->sweep[i]->ray[0]->range[k] = 0;
+            }
+         if (val >= 35)
+            {
+            val1 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[0]->range[k-1]);
+            val2 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[0]->range[k+1]);
+            if (val1 == BADVAL || val1 == APFLAG ||
+                val1 == RFVAL || val1 == NOECHO ||
+                val2 == BADVAL || val2 == APFLAG ||
+                val2 == RFVAL || val2 == NOECHO ||
+                val1 < 15 || val2 || 15)
+               {
+               /*bin isolado*/
+               vol_controle->sweep[i]->ray[0]->range[k] = 0;
+               }               
+            }            
+         }
+
+      
+
+      /*varre os outros rays*/
+      for(j = 1; j < radar->v[var]->sweep[i]->h.nrays - 1; j++)
+         {
+         totaldBZ = 0;
+         for(k = 0; k < radar->v[var]->sweep[i]->ray[j]->h.nbins; k++)
+            {
+            val = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[j]->range[k]);
+            if (val == BADVAL || val == APFLAG ||
+                val == RFVAL || val == NOECHO) 
+               {
+               continue;
+               }
+
+            totaldBZ += val;
+            if (val >= 35)
+               {
+               val1 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[j-1]->range[k]);
+               val2 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[j+1]->range[k]);
+               if (val1 == BADVAL || val1 == APFLAG ||
+                   val1 == RFVAL || val1 == NOECHO ||
+                   val2 == BADVAL || val2 == APFLAG ||
+                   val2 == RFVAL || val2 == NOECHO ||
+                   val1 < 15 || val2 || 15)
+                  {
+                  /*bin isolado*/
+                  vol_controle->sweep[i]->ray[j]->range[k] = 0;
+                  }               
+               }
+            }
+
+         if (totaldBZ > (45.0 * ((float) radar->v[var]->sweep[i]->ray[j]->h.nbins)))
+            {
+             for(k = 0; k < radar->v[var]->sweep[i]->ray[j]->h.nbins; k++)
+                {
+                vol_controle->sweep[i]->ray[j]->range[k] = 0;
+                }
+            }
+         
+         
+         /*verifica pontos isolados na radial*/
+         for(k = 1; k < radar->v[var]->sweep[i]->ray[j]->h.nbins-1; k++)
+            {
+            val = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[j]->range[k]);
+            if (val == BADVAL || val == APFLAG ||
+                val == RFVAL || val == NOECHO) 
+               {
+               continue;
+               }
+            if (val >= 35)
+               {
+               val1 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[j]->range[k-1]);
+               val2 = radar->v[var]->h.f(radar->v[var]->sweep[i]->ray[j]->range[k+1]);
+               if (val1 == BADVAL || val1 == APFLAG ||
+                   val1 == RFVAL || val1 == NOECHO ||
+                   val2 == BADVAL || val2 == APFLAG ||
+                   val2 == RFVAL || val2 == NOECHO ||
+                   val1 < 15 || val2 || 15)
+                  {
+                  /*bin isolado*/
+                  vol_controle->sweep[i]->ray[j]->range[k] = 0;
+                  }               
+               }            
+            }
+         }
+      }
+
+
+   /*temos entao um volume com 0 onde ha dados suspeitos e 1 em dados ok
+   preencheremos os dados suspeitos como BAD_VAL
+
+   */
+   for(i = 0; i < vol_controle->h.nsweeps; i++)
+      {
+      for(j = 0; j < vol_controle->sweep[i]->h.nrays; j++)
+         {
+         for(k = 0; k < vol_controle->sweep[i]->ray[j]->h.nbins; k++)
+            {
+            if (0 == vol_controle->sweep[i]->ray[j]->range[k])
+               {
+               radar->v[var]->sweep[i]->ray[j]->range[k] =
+                  radar->v[var]->h.invf(BADVAL);
+               }
+            }
+         }
+      }
+   }
 

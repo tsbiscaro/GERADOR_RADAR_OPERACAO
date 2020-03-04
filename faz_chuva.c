@@ -260,7 +260,9 @@ lista_parametros->levels[lev], data, hora);
                      if (kdp > 150)
                         kdp = 0;
                      
-                     /*calcula Dual Pol - Banda S*/
+                     /*calcula Dual Pol - Banda vem do arquivo de parametro
+                     0 = S, 1 = C, 2 = X
+                     */
                      bin_temp = calcula_chuva_dual_pol(dbz, zdr,
                                                        kdp, a, b, banda);
                      if (bin_temp > 200)
