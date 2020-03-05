@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
    int VAR[4] = {DZ_INDEX, CZ_INDEX, VR_INDEX, SW_INDEX};
    int var_idx, i;
    int var = 0, dx = 0, dy = 0, nx = 0, ny = 0, banda=0;
+   int dxppi, nxppi, dyppi, nyppi;
+   
    
    if (argc != 3)
       {
@@ -24,14 +26,20 @@ int main(int argc, char *argv[])
       printf("Erro na abertura do arquivo %s\n", argv[2]);
       return -1;
       }
-
+   
    fscanf(fp, "%d", &var);
    fscanf(fp, "%d", &nx);
    fscanf(fp, "%d", &ny);
    fscanf(fp, "%d", &dx);
    fscanf(fp, "%d", &dy);
+   fscanf(fp, "%d", &nxppi);
+   fscanf(fp, "%d", &nyppi);
+   fscanf(fp, "%d", &dxppi);
+   fscanf(fp, "%d", &dyppi);
    fscanf(fp, "%d", &banda);
-    
+   fclose(fp);
+
+   
    memset(&lista_parametros, 0, sizeof(struct params_list));
 
    strcpy(lista_parametros.file_list[0], argv[1]);
@@ -91,17 +99,12 @@ int main(int argc, char *argv[])
    strcpy(lista_parametros.sufixo, "vil");
    (void) faz_vil(&lista_parametros, radar);
 
-   fscanf(fp, "%d", &nx);
-   fscanf(fp, "%d", &ny);
-   fscanf(fp, "%d", &dx);
-   fscanf(fp, "%d", &dy);
-   fclose(fp);
    
-   lista_parametros.nx = nx;
-   lista_parametros.ny = ny;
+   lista_parametros.nx = nxppi;
+   lista_parametros.ny = nyppi;
    lista_parametros.nz = 1;
-   lista_parametros.dx = dx;
-   lista_parametros.dy = dy;
+   lista_parametros.dx = dxppi;
+   lista_parametros.dy = dyppi;
    lista_parametros.dz = 1000;
    lista_parametros.radar_x = lista_parametros.nx / 2;
    lista_parametros.radar_y = lista_parametros.ny / 2;
