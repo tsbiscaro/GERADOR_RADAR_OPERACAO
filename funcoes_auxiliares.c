@@ -711,7 +711,7 @@ void filtra_raw_data(Radar *radar)
                 val1 == RFVAL || val1 == NOECHO ||
                 val2 == BADVAL || val2 == APFLAG ||
                 val2 == RFVAL || val2 == NOECHO ||
-                val1 < 15 || val2 || 15)
+                ((val1 < 15) && (val2 < 15)))
                {
                /*bin isolado*/
                vol_controle->sweep[i]->ray[0]->range[k] = 0;
