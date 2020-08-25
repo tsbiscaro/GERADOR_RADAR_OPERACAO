@@ -265,10 +265,6 @@ lista_parametros->levels[lev], data, hora);
                      */
                      bin_temp = calcula_chuva_dual_pol(dbz, zdr,
                                                        kdp, a, b, banda);
-                     if (bin_temp > 200)
-                        {
-                        printf("%f %f %f\n", dbz, zdr, kdp);
-                        }                     
                      }
                   
                   (void) fwrite((void *) &bin_temp, sizeof(float), 1, fp);

@@ -145,13 +145,13 @@ int faz_ppi_polar(struct params_list *lista_parametros, Radar *radar)
                              sizeof(float), 1, fp);
                tmpW = (float) sweep->ray[0]->h.gate_size;
                (void) fwrite((void *) &tmpW, sizeof(float), 1, fp);
-               for (i = 0; i < sweep->h.nrays - 1; i++)
+               for (i = 0; i < sweep->h.nrays; i++)
                   {
                   (void) fwrite((void *) &sweep->ray[i]->h.azimuth,
                                 sizeof(float), 1, fp);
                   tmpW = (float) sweep->ray[i]->h.nbins;
                   (void) fwrite((void *) &tmpW, sizeof(float), 1, fp);
-                  for (j = 0; j < sweep->ray[i]->h.nbins - 1; j++)
+                  for (j = 0; j < sweep->ray[i]->h.nbins; j++)
                      {
                      bin_temp = sweep->h.f(sweep->ray[i]->range[j]);
                      if (bin_temp > 150)
