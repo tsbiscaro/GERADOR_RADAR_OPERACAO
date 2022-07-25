@@ -108,7 +108,7 @@ int faz_ppi_polar(struct params_list *lista_parametros, Radar *radar)
             memset(arq_out, 0, MAX_FILENAME*sizeof(char));            
             
 #ifdef DATAHORA            
-            sprintf(arq_out, "%s_%s_%02d_%s.dat",
+            sprintf(arq_out, "%s_POLAR_%s_%02d_%s.dat",
                     lista_parametros->sufixo,
                     RSL_ftype[lista_parametros->vars[var]],
                     lista_parametros->levels[lev], data_hora);
@@ -121,7 +121,7 @@ int faz_ppi_polar(struct params_list *lista_parametros, Radar *radar)
 #else
 
 
-            sprintf(arq_out, "%s_%s_%02d.dat",
+            sprintf(arq_out, "%s_POLAR_%s_%02d.dat",
                     lista_parametros->sufixo,
                     RSL_ftype[lista_parametros->vars[var]],
                     lista_parametros->levels[lev]);
@@ -139,19 +139,19 @@ int faz_ppi_polar(struct params_list *lista_parametros, Radar *radar)
                {
                //RSL_sort_rays_in_sweep(sweep);
                (void) fwrite((void *) &sweep->h.elev, sizeof(float), 1, fp);
-               tmpW = (float) sweep->h.nrays;               
+               tmpW = (float) sweep->h.nrays;
                (void) fwrite((void *) &tmpW, sizeof(float), 1, fp);
                (void) fwrite((void *) &sweep->h.beam_width,
                              sizeof(float), 1, fp);
                tmpW = (float) sweep->ray[0]->h.gate_size;
                (void) fwrite((void *) &tmpW, sizeof(float), 1, fp);
-               for (i = 0; i < sweep->h.nrays - 1; i++)
+               for (i = 0; i < sweep->h.nrays; i++)
                   {
                   (void) fwrite((void *) &sweep->ray[i]->h.azimuth,
                                 sizeof(float), 1, fp);
                   tmpW = (float) sweep->ray[i]->h.nbins;
                   (void) fwrite((void *) &tmpW, sizeof(float), 1, fp);
-                  for (j = 0; j < sweep->ray[i]->h.nbins - 1; j++)
+                  for (j = 0; j < sweep->ray[i]->h.nbins; j++)
                      {
                      bin_temp = sweep->h.f(sweep->ray[i]->range[j]);
                      if (bin_temp > 150)
