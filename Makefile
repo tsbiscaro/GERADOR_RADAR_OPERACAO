@@ -1,7 +1,7 @@
 CC=gcc
 LIBS=-lm -lrsl -lz
 CFLAGS=
-OBJ=funcoes_auxiliares.o faz_cubo.o faz_cappi.o faz_echotop.o faz_ppi.o faz_ppi_polar.o faz_vil.o main_geral.o filtra_volume.o
+OBJ=funcoes_auxiliares.o faz_cubo.o faz_cappi.o faz_echotop.o faz_ppi.o faz_ppi_polar.o faz_vil.o faz_chuva.o main_geral.o filtra_volume.o 
 
 #gcc faz_echobase.c faz_maxdisplay.c faz_cappi.c faz_echotop.c faz_ppi.c faz_hmax.c faz_rhi.c main_geral.c -o cappi.exe -I/home/tbiscaro/rsl-v1.40/include  -L/home/tbiscaro/rsl-v1.40/lib -lm  -lrsl -g -O0 -Wall
 ############################# Makefile ##########################
