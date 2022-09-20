@@ -1,0 +1,4 @@
+- compilar os codigos
+gcc conta_elevacoes_vars.c -lrsl -o conta_elevacoes_vars.x
+gcc concatena_vol_2.c -lrsl -o concatena_vol_2.x
+- rodar o script confere_arquivos.sh no diretorio onde se encontram os dados
