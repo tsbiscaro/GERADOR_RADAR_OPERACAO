@@ -104,6 +104,14 @@ int faz_ppi_polar(struct params_list *lista_parametros, Radar *radar)
                /*Ja leu todos os sweeps, sai do for*/
                break;
                }            
+
+            if (lista_parametros->levels[lev] > volume->h.nsweeps)
+               {
+               printf("Maximo de sweeps (%d) atingido\n", volume->h.nsweeps);
+               /*Ja leu todos os sweeps, sai do for*/
+               break;
+               }
+
             
             memset(arq_out, 0, MAX_FILENAME*sizeof(char));            
             

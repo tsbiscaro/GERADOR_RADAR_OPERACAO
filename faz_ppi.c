@@ -102,6 +102,13 @@ int faz_ppi(struct params_list *lista_parametros, Radar *radar)
                break;
                }
 
+            if (lista_parametros->levels[lev] > volume->h.nsweeps)
+               {
+               printf("Maximo de sweeps (%d) atingido\n", volume->h.nsweeps);
+               /*Ja leu todos os sweeps, sai do for*/
+               break;
+               }
+            
             /*cria um cappi (polar) vazio*/
             ppi = RSL_new_cappi(sweep, lista_parametros->levels[lev]);
             

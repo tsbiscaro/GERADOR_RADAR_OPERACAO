@@ -83,26 +83,6 @@ int main(int argc, char *argv[])
    strcpy(lista_parametros.sufixo, "cappi");
    lista_parametros.produto = PROD_CAPPI;
    (void) faz_cappi(&lista_parametros, radar);
-
-   lista_parametros.nlevels = 1;
-   lista_parametros.levels[0] = 3000;
-   
-   
-   strcpy(lista_parametros.sufixo, "chuva");
-   lista_parametros.produto = PROD_CHUVA2;
-   (void) faz_chuva(&lista_parametros, radar);
-
-   lista_parametros.nvars = 2;
-   lista_parametros.vars[1] = VR_INDEX;
-   lista_parametros.nlevels = 3;
-   for (i = 0; i < lista_parametros.nlevels; i++)
-      lista_parametros.levels[i] = i + 1;
-   
-   lista_parametros.produto = PROD_PPI;
-   strcpy(lista_parametros.sufixo, "ppi");
-   (void) faz_ppi(&lista_parametros, radar);
-   return 0;
-   
    
    lista_parametros.nlevels = 3;
    lista_parametros.levels[0] = 20;
@@ -118,7 +98,6 @@ int main(int argc, char *argv[])
    lista_parametros.levels[1] = 16000;
    strcpy(lista_parametros.sufixo, "vil");
    (void) faz_vil(&lista_parametros, radar);
-
    
    lista_parametros.nx = nxppi;
    lista_parametros.ny = nyppi;
@@ -149,7 +128,7 @@ int main(int argc, char *argv[])
    (void) faz_ppi(&lista_parametros, radar);
 
    lista_parametros.produto = PROD_PPI;
-   strcpy(lista_parametros.sufixo, "ppi_polar");
+   strcpy(lista_parametros.sufixo, "ppi");
    (void) faz_ppi_polar(&lista_parametros, radar);
 
 
