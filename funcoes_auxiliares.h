@@ -206,6 +206,7 @@ void preenche_cabecalho(struct header_saida *header,
 float CUSTOM_F(Range x);
 Range CUSTOM_INVF(float x);
 float calcula_vil(float z1, float z2, float dz);
+float calcula_vii(float z1, float z2, float dz);
 Cube *faz_cubo(Volume *volume, struct params_list *lista_parametros,
                float alt_radar);
 float acha_altura_cubo(Volume *v);

@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
    /*aplica filtro de radiais espurias*/
    filtra_raw_data(radar);
 
+   lista_parametros.a = 200.0;
+   lista_parametros.b = 1.6;
    
    lista_parametros.nx = nx;
    lista_parametros.ny = ny;
@@ -76,6 +78,38 @@ int main(int argc, char *argv[])
       {
       lista_parametros.vars[0] = DZ_INDEX;
       }
+
+
+   lista_parametros.nlevels = 1;
+   lista_parametros.levels[0] = 2;
+   lista_parametros.produto = PROD_PPI;
+   strcpy(lista_parametros.sufixo, "ppi");
+   (void) faz_ppi(&lista_parametros, radar);
+   return 0;
+    
+   
+   lista_parametros.nlevels = 1;
+   lista_parametros.levels[0] = 3000;
+   strcpy(lista_parametros.sufixo, "rain_dp");
+   lista_parametros.produto = PROD_CHUVA1;
+   (void) faz_chuva(&lista_parametros, radar);
+   return 0;
+   
+
+   lista_parametros.nlevels = 1;
+   lista_parametros.levels[0] = 1;
+   lista_parametros.produto = PROD_PPI;
+   strcpy(lista_parametros.sufixo, "ppi");
+   (void) faz_ppi(&lista_parametros, radar);
+
+   lista_parametros.levels[0] = 2000;
+   strcpy(lista_parametros.sufixo, "cappi");
+   lista_parametros.produto = PROD_CAPPI;
+   (void) faz_cappi(&lista_parametros, radar);
+
+   return 0;
+   
+
    
    for (i = 0; i < lista_parametros.nlevels; i++)
       lista_parametros.levels[i] = (i + 2)*1000;

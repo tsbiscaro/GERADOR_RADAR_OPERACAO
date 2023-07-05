@@ -51,7 +51,7 @@ int faz_vii(struct params_list *lista_parametros,  Radar *radar)
    radar_x = lista_parametros->radar_x;
    radar_y = lista_parametros->radar_y;
    radar_z = lista_parametros->radar_z;
-   lista_parametros->produto = PROD_VII;
+   lista_parametros->produto = PROD_VIL;
    
    saida = aloca_matriz_16(nx, ny);
 
