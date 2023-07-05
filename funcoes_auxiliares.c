@@ -333,8 +333,38 @@ float calcula_vil(float z1, float z2, float dz)
    float a = 0.00000344;
    float b = 0.57142857;
    
-   if (z1 > 57) z1 = 57;
-   if (z2 > 57) z2 = 57;
+   if (z1 > 65) z1 = 65;
+   if (z2 > 65) z2 = 65;
+   
+   z1 = pow(10,(z1/10));
+   z2 = pow(10,(z2/10));
+   
+   return (dz * a * pow(((z1+z2)/2), b));
+   
+   }
+/*
+@##############################################################################
+@
+@   NOME         : calcula_vii
+@
+@   FUNCAO       : calcula o conteudo de gelo integrada entre 2 camadas
+@
+@   PARAMETROS   : (E) refletividades em 2 niveis
+@                  (S) vil
+@
+@   RETORNO      : 
+@
+@   OBSERVACOES  : 
+@
+@##############################################################################
+*/
+float calcula_vii(float z1, float z2, float dz)
+   {
+   float a = pow(1000.0*917.0*4000000.0*M_PI, 3.0/7.0);
+   float b = 0.57142857;
+   
+   if (z1 > 65) z1 = 65;
+   if (z2 > 65) z2 = 65;
    
    z1 = pow(10,(z1/10));
    z2 = pow(10,(z2/10));
