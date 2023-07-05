@@ -360,8 +360,10 @@ float calcula_vil(float z1, float z2, float dz)
 */
 float calcula_vii(float z1, float z2, float dz)
    {
-   float a = pow(1000.0*917.0*4000000.0*M_PI, 3.0/7.0);
-   float b = 0.57142857;
+   float a = pow(1000.0*917.0*4e6*M_PI, 3.0/7.0);
+   float b = pow(5.28e-18/720.0, 4.0/7.0);
+   float c = 4.0/7.0;
+   
    
    if (z1 > 65) z1 = 65;
    if (z2 > 65) z2 = 65;
@@ -369,7 +371,7 @@ float calcula_vii(float z1, float z2, float dz)
    z1 = pow(10,(z1/10));
    z2 = pow(10,(z2/10));
    
-   return (dz * a * pow(((z1+z2)/2), b));
+   return (dz * a * b * pow(((z1+z2)/2), b));
    
    }
 /*
