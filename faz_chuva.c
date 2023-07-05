@@ -19,7 +19,8 @@
 
 int faz_chuva(struct params_list *lista_parametros, Radar *radar)
    {
-   Volume *volumeZDR = NULL, *volumeDBZ = NULL, *volumeKDP = NULL;
+   Volume *volumeZDR = NULL, *volumeDBZ = NULL,
+      *volumeKDP = NULL, *volumeCZ = NULL, *volumeDZ = NULL;
    Carpi *cappiZDR = NULL, *cappiDBZ = NULL, *cappiKDP = NULL;
    float range = 1000;
    float h = 0;
@@ -66,48 +67,19 @@ int faz_chuva(struct params_list *lista_parametros, Radar *radar)
       
    for (var = 0; var < MAX_VARS - 1; var++)
       {
-#if 0
-      if (radar->v[lista_parametros->vars[var]] == NULL)
-         {
-         printf("Variavel %s invalida\n",
-                RSL_ftype[lista_parametros->vars[var]]);
-         /*Se nao encontrou a variavel pula pra proxima*/
-         continue;
-         }
-      else
-         {
-         printf("Variavel %d\n", lista_parametros->vars[var]);
-         }
-      
-      switch(lista_parametros->vars[var])
-         {
-         case CZ_INDEX:
-         case DZ_INDEX:
-            volumeDBZ = radar->v[lista_parametros->vars[var]];            
-            /*corrige o beam_width caso necessario*/
-            corrige_param_radar(volumeDBZ, lista_parametros);
-            (void) filtra_volume(volumeDBZ, lista_parametros);
-            break;
-         case DR_INDEX:
-            volumeZDR = radar->v[lista_parametros->vars[var]];
-            corrige_param_radar(volumeZDR, lista_parametros);
-            (void) filtra_volume(volumeZDR, lista_parametros);
-            break;
-         case KD_INDEX:
-            volumeKDP = radar->v[lista_parametros->vars[var]];
-            corrige_param_radar(volumeKDP, lista_parametros);
-            (void) filtra_volume(volumeKDP, lista_parametros);
-            break;            
-         }
-      #endif
       switch(var)
          {
-         case DZ_INDEX:
-         case CZ_INDEX:
-            volumeDBZ = radar->v[var];
+         case DZ_INDEX:            
+            volumeDZ = radar->v[var];
             /*corrige o beam_width caso necessario*/
-            corrige_param_radar(volumeDBZ, lista_parametros);
-            (void) filtra_volume(volumeDBZ, lista_parametros);
+            corrige_param_radar(volumeDZ, lista_parametros);
+            (void) filtra_volume(volumeDZ, lista_parametros);
+            break;
+         case CZ_INDEX:            
+            volumeCZ = radar->v[var];
+            /*corrige o beam_width caso necessario*/
+            corrige_param_radar(volumeCZ, lista_parametros);
+            (void) filtra_volume(volumeCZ, lista_parametros);
             break;
          case DR_INDEX:
             volumeZDR = radar->v[var];
@@ -131,6 +103,15 @@ int faz_chuva(struct params_list *lista_parametros, Radar *radar)
             break;            
          }
 
+      }
+
+   if (CZ_INDEX == lista_parametros->vars[0])
+      {
+      volumeDBZ = volumeCZ;
+      }
+   else
+      {
+      volumeDBZ = volumeDZ;
       }
    
    for (lev = 0; lev < lista_parametros->nlevels; lev++)
@@ -208,7 +189,7 @@ int faz_chuva(struct params_list *lista_parametros, Radar *radar)
 #ifdef DATAHORA            
       sprintf(arq_out, "%s_%s_%05d_%s.dat",
               lista_parametros->sufixo,
-              RSL_ftype[lista_parametros->vars[var]],
+              RSL_ftype[lista_parametros->vars[0]],
               lista_parametros->levels[lev], data_hora);
 /*
 sprintf(arq_out, "%s_%s_%05d_%s_%s.dat",
@@ -219,7 +200,7 @@ lista_parametros->levels[lev], data, hora);
 #else
       sprintf(arq_out, "%s_%s_%05d.dat",
               lista_parametros->sufixo,
-              RSL_ftype[lista_parametros->vars[var]],
+              RSL_ftype[lista_parametros->vars[0]],
               lista_parametros->levels[lev]);
 #endif
       /*
