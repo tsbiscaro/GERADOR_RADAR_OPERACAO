@@ -330,6 +330,7 @@ Range CUSTOM_INVF(float x)
 */
 float calcula_vil(float z1, float z2, float dz)
    {
+   /*VIL em kg/m2*/
    float a = 0.00000344;
    float b = 0.57142857;
    
@@ -360,9 +361,12 @@ float calcula_vil(float z1, float z2, float dz)
 */
 float calcula_vii(float z1, float z2, float dz)
    {
-   float a = 1000.0 * 917.0 * M_PI * pow(4e6, 3.0/7.0);
+   /*VII em kg/m3*/
+   
+   float a = 917.0 * M_PI * pow(4e6, 3.0/7.0);
    float b = pow(5.28e-18/720.0, 4.0/7.0);
    float c = 4.0/7.0;
+   float tmp = 0;
    
    
    if (z1 > 65) z1 = 65;
@@ -370,9 +374,8 @@ float calcula_vii(float z1, float z2, float dz)
    
    z1 = pow(10,(z1/10));
    z2 = pow(10,(z2/10));
-   
-   return (dz * a * b * pow(((z1+z2)/2), b));
-   
+
+   return (dz * a * b * pow(((z1+z2)/2), c));
    }
 /*
 @##############################################################################

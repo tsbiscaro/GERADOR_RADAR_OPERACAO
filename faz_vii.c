@@ -38,6 +38,7 @@ int faz_vii(struct params_list *lista_parametros,  Radar *radar)
    static short int *saida;
    char data_hora[16];
    float bin_temp;
+   float tmp_tmp = 0;
    
    memset(&cabecalho, 0, sizeof(struct header_saida));
    header_size = sizeof(struct header_saida);
@@ -174,9 +175,9 @@ int faz_vii(struct params_list *lista_parametros,  Radar *radar)
             }
          else
             {
-               for (i = 0; i < nx; i++)
-                  {
-                  for (j = 0; j < ny; j++)
+            for (i = 0; i < nx; i++)
+               {
+               for (j = 0; j < ny; j++)
                   {
                   bin_temp = volume->h.f(saida[i + nx*j]);
                   if (bin_temp > 1500)
