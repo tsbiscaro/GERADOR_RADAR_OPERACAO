@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
    fscanf(fp, "%d", &dxppi);
    fscanf(fp, "%d", &dyppi);
    fscanf(fp, "%d", &banda);
-   fscanf(fp, "%d", &beam2);
+   //fscanf(fp, "%d", &beam2);
    
    fclose(fp);
 
@@ -88,8 +88,12 @@ int main(int argc, char *argv[])
 
    /*
    largura de feixe do radar
-   forca 2 graus para os radares DECEA/CENSIPAM
+   
+   use um valor de beam2 > 0 para forcar 2 graus
+   
+   necessario para os radares DECEA/CENSIPAM
    */
+   
    if (0 != beam2)
       {
       lista_parametros.beam_width = 2;
