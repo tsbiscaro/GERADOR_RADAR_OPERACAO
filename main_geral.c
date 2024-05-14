@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
    struct params_list lista_parametros;
    int VAR[4] = {DZ_INDEX, CZ_INDEX, VR_INDEX, SW_INDEX};
    int var_idx, i;
-   int var = 0, dx = 0, dy = 0, nx = 0, ny = 0, banda=0;
+   int var = 0, dx = 0, dy = 0, nx = 0, ny = 0, banda=0, beam2 = 0;
    int dxppi, nxppi, dyppi, nyppi;
    
    
@@ -37,6 +37,8 @@ int main(int argc, char *argv[])
    fscanf(fp, "%d", &dxppi);
    fscanf(fp, "%d", &dyppi);
    fscanf(fp, "%d", &banda);
+   fscanf(fp, "%d", &beam2);
+   
    fclose(fp);
 
    
@@ -55,8 +57,10 @@ int main(int argc, char *argv[])
    /*aplica filtro de radiais espurias*/
    filtra_raw_data(radar);
 
-   lista_parametros.a = 200.0;
-   lista_parametros.b = 1.6;
+
+   /*usa a ZR do NEXRAD*/
+   lista_parametros.a = 300;
+   lista_parametros.b = 1.4;
    
    lista_parametros.nx = nx;
    lista_parametros.ny = ny;
@@ -68,7 +72,7 @@ int main(int argc, char *argv[])
    lista_parametros.radar_y = lista_parametros.ny/2;
    lista_parametros.radar_z = 0;
    lista_parametros.banda = banda;
-   lista_parametros.nvars = 1;
+   lista_parametros.nvars = 4;
    lista_parametros.nlevels = 15;
    if (0 == var)
       {
@@ -78,53 +82,41 @@ int main(int argc, char *argv[])
       {
       lista_parametros.vars[0] = DZ_INDEX;
       }
+   lista_parametros.vars[1] = DR_INDEX;
+   lista_parametros.vars[2] = KD_INDEX;
+   lista_parametros.vars[3] = RH_INDEX;
 
-
-   lista_parametros.nlevels = 1;
-   lista_parametros.levels[0] = 2;
-   lista_parametros.produto = PROD_PPI;
-   strcpy(lista_parametros.sufixo, "ppi");
-   (void) faz_ppi(&lista_parametros, radar);
-   return 0;
-    
-   
-   lista_parametros.nlevels = 1;
-   lista_parametros.levels[0] = 3000;
-   strcpy(lista_parametros.sufixo, "rain_dp");
-   lista_parametros.produto = PROD_CHUVA1;
-   (void) faz_chuva(&lista_parametros, radar);
-   return 0;
-   
-
-   lista_parametros.nlevels = 1;
-   lista_parametros.levels[0] = 1;
-   lista_parametros.produto = PROD_PPI;
-   strcpy(lista_parametros.sufixo, "ppi");
-   (void) faz_ppi(&lista_parametros, radar);
-
-   lista_parametros.levels[0] = 2000;
-   strcpy(lista_parametros.sufixo, "cappi");
-   lista_parametros.produto = PROD_CAPPI;
-   (void) faz_cappi(&lista_parametros, radar);
-
-   return 0;
-   
-
+   /*
+   largura de feixe do radar
+   forca 2 graus para os radares DECEA/CENSIPAM
+   */
+   if (0 != beam2)
+      {
+      lista_parametros.beam_width = 2;
+      }   
    
    for (i = 0; i < lista_parametros.nlevels; i++)
       lista_parametros.levels[i] = (i + 2)*1000;
    
+   lista_parametros.levels[0] = 3000;
+   lista_parametros.nvars=1;
+   lista_parametros.nlevels=1;
    strcpy(lista_parametros.sufixo, "cappi");
    lista_parametros.produto = PROD_CAPPI;
    (void) faz_cappi(&lista_parametros, radar);
+   return 0;
    
-   lista_parametros.nlevels = 3;
+   lista_parametros.nvars = 1;
+   lista_parametros.nlevels = 4;
    lista_parametros.levels[0] = 20;
    lista_parametros.levels[1] = 35;
    lista_parametros.levels[2] = 45;
+   lista_parametros.levels[3] = 10;
    strcpy(lista_parametros.sufixo, "echotop");
    lista_parametros.produto = PROD_TOP;
    (void) faz_echotop(&lista_parametros, radar);
+   RSL_free_radar(radar);   
+   return 0;
    
    /*faz VIL entre 1000 e 16000 m*/
    lista_parametros.nlevels = 2;
@@ -133,6 +125,7 @@ int main(int argc, char *argv[])
    strcpy(lista_parametros.sufixo, "vil");
    (void) faz_vil(&lista_parametros, radar);
    
+
    lista_parametros.nx = nxppi;
    lista_parametros.ny = nyppi;
    lista_parametros.nz = 1;
@@ -165,7 +158,12 @@ int main(int argc, char *argv[])
    strcpy(lista_parametros.sufixo, "ppi");
    (void) faz_ppi_polar(&lista_parametros, radar);
 
-
+   lista_parametros.nlevels = 1;
+   lista_parametros.levels[0] = 3000;
+   lista_parametros.produto = PROD_CHUVA1;
+   strcpy(lista_parametros.sufixo, "chuva");
+   (void) faz_chuva(&lista_parametros, radar);
+   
    RSL_free_radar(radar);
 
    

@@ -534,7 +534,7 @@ float calcula_chuva_dual_pol(float dbz, float zdr,
    {
    float rkdp = 0;
    float rain = 0;
-
+   
    switch(banda)
       {
       /*banda-S*/
